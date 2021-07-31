@@ -5,7 +5,7 @@
 @Email: viebboy@gmail.com, dat.tranthanh@tut.fi, thanh.tran@tuni.fi
 """
 import Models
-import Utility, numpy as np, os
+import Utility, os
 import pickle
 import inspect
 import exp_configurations as Conf
@@ -29,8 +29,13 @@ def train_baseline(args):
     
     weight_decay, constraint = regularizer
     
-    x_train, y_train, x_val, y_val, x_test, y_test = Utility.load_data(dataset)
-    
+#    x_train, y_train, x_val, y_val, x_test, y_test = Utility.load_data(dataset)
+# START - Temporarily Customized code to use Cifar10 instead of CFW until we can load CFW dataset
+    # Loading from local directory instead of `tf.keras.datasets.cifar10.load_data()` to avoid the download at runtime
+    cifar10_dir = os.path.join(Conf.DATA_DIR, 'cifar-10')
+    (x_train, y_train), (x_val, y_val), (x_test, y_test) = Utility.load_cifar_data(cifar10_dir)
+# END - Temporarily Customized code to use Cifar10 instead of CFW until we can load CFW dataset
+
     batch_size = get_batch_size('tensor')
     
     train_gen, train_steps = Utility.get_data_generator(x_train, y_train, shuffle=True, augmentation=True, batch_size=batch_size)

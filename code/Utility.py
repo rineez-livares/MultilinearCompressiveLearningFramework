@@ -171,6 +171,63 @@ def load_data(name):
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
+def load_batch(file):
+    import pickle
+    with open(file, 'rb') as fo:
+        d = pickle.load(fo, encoding='bytes')
+        d_decoded = {}
+        for k, v in d.items():
+            d_decoded[k.decode('utf8')] = v
+        d = d_decoded
+        data = d['data']
+        labels = d['labels']
+        data = data.reshape(data.shape[0], 3, 32, 32)
+    return data, labels
+
+
+def load_cifar_data(path='../data/cifar-10'):
+    """Loads CIFAR10 dataset.
+    # Returns
+        Tuple of Numpy arrays: `(x_train, y_train), (x_test, y_test)`.
+    """
+    from keras import backend as K
+
+    num_train_samples = 50000
+
+    x_train = np.empty((num_train_samples, 3, 32, 32), dtype='uint8')
+    y_train = np.empty((num_train_samples,), dtype='uint8')
+
+    for i in range(1, 6):
+        fpath = os.path.join(path, 'data_batch_' + str(i))
+        (x_train[(i - 1) * 10000: i * 10000, :, :, :],
+         y_train[(i - 1) * 10000: i * 10000]) = load_batch(fpath)
+
+    fpath = os.path.join(path, 'test_batch')
+    x_test, y_test = load_batch(fpath)
+
+    y_train = np.reshape(y_train, (len(y_train), 1))
+    y_test = np.reshape(y_test, (len(y_test), 1))
+
+    if K.image_data_format() == 'channels_last':
+        x_train = x_train.transpose(0, 2, 3, 1)
+        x_test = x_test.transpose(0, 2, 3, 1)
+
+    indices = range(49000, 50000)
+    x_val = x_train[indices]
+    y_val = y_train[indices]
+    indices = range(49000)
+    x_train = x_train[indices]
+    y_train = y_train[indices]
+
+    n_class = np.unique(y_train).size
+
+    y_train = to_categorical(y_train, n_class)
+    y_val = to_categorical(y_val, n_class)
+    y_test = to_categorical(y_test, n_class)
+
+    return (x_train, y_train), (x_val, y_val), (x_test, y_test)
+
+
 def load_HOSVD_matrix(dataset, height, width, depth):
     filename = 'HOSVD_%s_%s_%s_%s.pickle' % (dataset, str(height), str(width), str(depth))
     path = os.path.join(Conf.DATA_DIR, filename)

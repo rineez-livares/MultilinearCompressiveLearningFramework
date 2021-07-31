@@ -30,11 +30,11 @@ def main(argv):
             index = int(arg)
 
     baseline_configurations = Utility.create_configuration([Conf.baseline_var_names], [Conf.conf_baseline])
-    experiment_configurations = Utility.create_configuration([Conf.hyperparameters]*4,
+    experiment_configurations = Utility.create_configuration([Conf.hyperparameters]*3,
                                                    [Conf.conf_vector,
                                                     Conf.conf_tensor_standard,
                                                     # Conf.conf_tensor_linearity,
-                                                    Conf.conf_tensor_resolution, 
+                                                    # Conf.conf_tensor_resolution,
                                                     Conf.conf_tensor_initialization])
     
     nb_configuration = len(baseline_configurations) + len(experiment_configurations)

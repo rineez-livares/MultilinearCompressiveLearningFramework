@@ -71,9 +71,10 @@ def train_baseline(args):
             model.set_weights(current_weights)
         
         model.optimizer.lr = lr
-        
+
         for iteration in range(epoch):
-            h = model.fit_generator(train_gen, train_steps, epochs=1, verbose=0)
+            #h = model.fit_generator(train_gen, train_steps, epochs=1, verbose=0)
+            h = model.fit(train_gen, steps_per_epoch=train_steps, epochs=1, verbose=0)
 
             val_performance = model.evaluate_generator(val_gen, val_steps)
             acc_index = model.metrics_names.index('acc')

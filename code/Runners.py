@@ -76,7 +76,7 @@ def train_baseline(args):
             #h = model.fit_generator(train_gen, train_steps, epochs=1, verbose=0)
             h = model.fit(train_gen, steps_per_epoch=train_steps, epochs=1, verbose=0)
 
-            val_performance = model.evaluate_generator(val_gen, val_steps)
+            val_performance = model.evaluate(val_gen, steps=val_steps)
             acc_index = model.metrics_names.index('acc')
             loss_index = model.metrics_names.index('loss')
             
@@ -95,10 +95,13 @@ def train_baseline(args):
     
     model.set_weights(optimal_weights)
     
-    train_p = model.evaluate_generator(train_gen, train_steps)
-    val_p = model.evaluate_generator(val_gen, val_steps)
-    test_p = model.evaluate_generator(test_gen, test_steps)
-    
+    # train_p = model.evaluate_generator(train_gen, train_steps)
+    train_p = model.evaluate(train_gen, steps=train_steps)
+    # val_p = model.evaluate_generator(val_gen, val_steps)
+    val_p = model.evaluate(val_gen, steps=val_steps)
+    # test_p = model.evaluate_generator(test_gen, test_steps)
+    test_p = model.evaluate(test_gen, steps=test_steps)
+
     train_performance = {}
     val_performance = {}
     test_performance = {}
@@ -112,8 +115,8 @@ def train_baseline(args):
     for layer in model.layers:
         if layer.name.startswith(classifier):
             weights[layer.name] = layer.get_weights()
-    
-    
+
+
     data = {'weights': weights,
             'train_acc': train_performance['acc'],
             'val_acc': val_performance['acc'],
@@ -259,10 +262,13 @@ def train_sensing(args):
         test_acc_list = []
         
         print('pre training evaluation')
-        train_p = model.evaluate_generator(train_gen_fix, train_steps_fix)
-        val_p = model.evaluate_generator(val_gen, val_steps)
-        test_p = model.evaluate_generator(test_gen, test_steps)
-        
+        # train_p = model.evaluate_generator(train_gen_fix, train_steps_fix)
+        train_p = model.evaluate(train_gen_fix, steps=train_steps_fix)
+        # val_p = model.evaluate_generator(val_gen, val_steps)
+        val_p = model.evaluate(val_gen, steps=val_steps)
+        # test_p = model.evaluate_generator(test_gen, test_steps)
+        test_p = model.evaluate(test_gen, steps=test_steps)
+
         train_acc_list.append(train_p[metrics.index('acc')])
         val_acc_list.append(val_p[metrics.index('acc')])
         test_acc_list.append(test_p[metrics.index('acc')])
